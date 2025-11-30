@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenLeaf Haven - Houseplants E-commerce Store</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@reduxjs/toolkit@1.9.7/dist/redux-toolkit.umd.js"></script>
+    <script src="https://unpkg.com/react-redux@8.1.3/dist/react-redux.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+        }
+
+        /* Header Styles */
+        .header {
+            background: #2d5a27;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #a8e6a3;
+        }
+
+        .nav {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-button {
+            background: transparent;
+            border: 2px solid #a8e6a3;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-button:hover {
+            background: #a8e6a3;
+            color: #2d5a27;
+        }
+
+        .cart-icon {
+            position: relative;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Landing Page Styles */
+        .landing-page {
+            height: 100vh;
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
+                        url('https://images.unsplash.com/photo-1416879595882-3373a0480b5b?ixlib=rb-4.0.3&w=1200') center/cover;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .landing-content {
+            max-width: 600px;
+        }
+
+        .company-name {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            color: #a8e6a3;
+        }
+
+        .company-description {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .get-started-btn {
+            background: #a8e6a3;
+            color: #2d5a27;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            font-weight: bold;
+        }
+
+        .get-started-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Product Listing Styles */
+        .product-listing {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            text-align: center;
+            color: #2d5a27;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+        }
+
+        .categories {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .category-btn {
+            background: #e8f5e8;
+            border: 2px solid #2d5a27;
+            color: #2d5a27;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .category-btn.active {
+            background: #2d5a27;
+            color: white;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .product-info {
+            padding: 1.5rem;
+        }
+
+        .product-name {
+            font-size: 1.3rem;
+            color: #2d5a27;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-price {
+            font-size: 1.5rem;
+            color: #e74c3c;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .add-to-cart-btn {
+            width: 100%;
+            background: #2d5a27;
+            color: white;
+            border: none;
+            padding: 0.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s ease;
+        }
+
+        .add-to-cart-btn:hover:not(:disabled) {
+            background: #1e3e1a;
+        }
+
+        .add-to-cart-btn:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+        }
+
+        /* Shopping Cart Styles */
+        .shopping-cart {
+            padding: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .cart-summary {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .cart-items {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .cart-item {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .cart-item-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .cart-item-details {
+            flex: 1;
+        }
+
+        .cart-item-name {
+            font-size: 1.2rem;
+            color: #2d5a27;
+            margin-bottom: 0.5rem;
+        }
+
+        .cart-item-price {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .quantity-btn {
+            background: #2d5a27;
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .quantity {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 0 1rem;
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .cart-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .action-btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .checkout-btn {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .continue-shopping-btn {
+            background: #2d5a27;
+            color: white;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Message Styles */
+        .message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            text-align: center;
+            z-index: 1000;
+        }
+
+        .message button {
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            background: #2d5a27;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { configureStore, createSlice } = ReduxToolkit;
+        const { Provider, useDispatch, useSelector } = ReactRedux;
+        const { useState, useEffect } = React;
+
+        // Redux Store
+        const cartSlice = createSlice({
+            name: 'cart',
+            initialState: {
+                items: [],
+                totalQuantity: 0,
+                totalPrice: 0,
+                addedItems: new Set() // Track which items have been added to cart
+            },
+            reducers: {
+                addToCart: (state, action) => {
+                    const newItem = action.payload;
+                    const existingItem = state.items.find(item => item.id === newItem.id);
+                    
+                    if (!existingItem) {
+                        state.items.push({
+                            ...newItem,
+                            quantity: 1
+                        });
+                    } else {
+                        existingItem.quantity++;
+                    }
+                    
+                    state.totalQuantity++;
+                    state.totalPrice += newItem.price;
+                    state.addedItems.add(newItem.id);
+                },
+                
+                removeFromCart: (state, action) => {
+                    const id = action.payload;
+                    const existingItem = state.items.find(item => item.id === id);
+                    
+                    if (existingItem.quantity === 1) {
+                        state.items = state.items.filter(item => item.id !== id);
+                        state.addedItems.delete(id);
+                    } else {
+                        existingItem.quantity--;
+                    }
+                    
+                    state.totalQuantity--;
+                    state.totalPrice -= existingItem.price;
+                },
+                
+                deleteFromCart: (state, action) => {
+                    const id = action.payload;
+                    const existingItem = state.items.find(item => item.id === id);
+                    
+                    state.items = state.items.filter(item => item.id !== id);
+                    state.totalQuantity -= existingItem.quantity;
+                    state.totalPrice -= existingItem.price * existingItem.quantity;
+                    state.addedItems.delete(id);
+                }
+            }
+        });
+
+        const store = configureStore({
+            reducer: {
+                cart: cartSlice.reducer
+            }
+        });
+
+        const { addToCart, removeFromCart, deleteFromCart } = cartSlice.actions;
+
+        // Sample Products Data
+        const productsData = [
+            {
+                id: 1,
+                name: "Snake Plant",
+                price: 29.99,
+                category: "Low Light",
+                thumbnail: "https://images.unsplash.com/photo-1593482892290-9a5c0d0357b7?w=300&h=200&fit=crop"
+            },
+            {
+                id: 2,
+                name: "Monstera Deliciosa",
+                price: 45.99,
+                category: "Tropical",
+                thumbnail: "https://images.unsplash.com/photo-1525498128493-380d1990a112?w=300&h=200&fit=crop"
+            },
+            {
+                id: 3,
+                name: "ZZ Plant",
+                price: 34.99,
+                category: "Low Maintenance",
+                thumbnail: "https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=300&h=200&fit=crop"
+            },
+            {
+                id: 4,
+                name: "Fiddle Leaf Fig",
+                price: 59.99,
+                category: "Tropical",
+                thumbnail: "https://images.unsplash.com/photo-1594736797933-d0ff4a3c6fb6?w=300&h=200&fit=crop"
+            },
+            {
+                id: 5,
+                name: "Spider Plant",
+                price: 24.99,
+                category: "Low Maintenance",
+                thumbnail: "https://images.unsplash.com/photo-1574180045827-681f8a1a9622?w=300&h=200&fit=crop"
+            },
+            {
+                id: 6,
+                name: "Peace Lily",
+                price: 39.99,
+                category: "Low Light",
+                thumbnail: "https://images.unsplash.com/photo-1453904300235-0f2f60b15b5d?w=300&h=200&fit=crop"
+            }
+        ];
+
+        // Header Component
+        const Header = ({ currentPage, onNavigate }) => {
+            const cart = useSelector(state => state.cart);
+            
+            return React.createElement('header', { className: 'header' },
+                React.createElement('div', { className: 'logo' }, '🌿 GreenLeaf Haven'),
+                React.createElement('nav', { className: 'nav' },
+                    React.createElement('button', {
+                        className: 'nav-button',
+                        onClick: () => onNavigate('products')
+                    }, 'Products'),
+                    React.createElement('button', {
+                        className: 'nav-button',
+                        onClick: () => onNavigate('cart')
+                    }, 'Cart'),
+                    React.createElement('div', {
+                        className: 'cart-icon',
+                        onClick: () => onNavigate('cart')
+                    }, '🛒', 
+                        React.createElement('span', { className: 'cart-count' }, cart.totalQuantity)
+                    )
+                )
+            );
+        };
+
+        // Landing Page Component
+        const LandingPage = ({ onGetStarted }) => {
+            return React.createElement('section', { className: 'landing-page' },
+                React.createElement('div', { className: 'landing-content' },
+                    React.createElement('h1', { className: 'company-name' }, 'GreenLeaf Haven'),
+                    React.createElement('p', { className: 'company-description' }, 
+                        'Welcome to GreenLeaf Haven, your premier destination for beautiful houseplants. ' +
+                        'We offer a wide variety of indoor plants to bring nature into your home. ' +
+                        'From low-light tolerant plants to tropical beauties, find the perfect green companion for your space.'
+                    ),
+                    React.createElement('button', {
+                        className: 'get-started-btn',
+                        onClick: onGetStarted
+                    }, 'Get Started')
+                )
+            );
+        };
+
+        // Product Listing Component
+        const ProductListing = () => {
+            const dispatch = useDispatch();
+            const cart = useSelector(state => state.cart);
+            const [selectedCategory, setSelectedCategory] = useState('All');
+            
+            const categories = ['All', ...new Set(productsData.map(product => product.category))];
+            
+            const filteredProducts = selectedCategory === 'All' 
+                ? productsData 
+                : productsData.filter(product => product.category === selectedCategory);
+            
+            const handleAddToCart = (product) => {
+                dispatch(addToCart(product));
+            };
+            
+            return React.createElement('section', { className: 'product-listing' },
+                React.createElement('h1', { className: 'page-title' }, 'Our Plants'),
+                
+                React.createElement('div', { className: 'categories' },
+                    categories.map(category => 
+                        React.createElement('button', {
+                            key: category,
+                            className: `category-btn ${selectedCategory === category ? 'active' : ''}`,
+                            onClick: () => setSelectedCategory(category)
+                        }, category)
+                    )
+                ),
+                
+                React.createElement('div', { className: 'products-grid' },
+                    filteredProducts.map(product => 
+                        React.createElement('div', { key: product.id, className: 'product-card' },
+                            React.createElement('img', {
+                                src: product.thumbnail,
+                                alt: product.name,
+                                className: 'product-image'
+                            }),
+                            React.createElement('div', { className: 'product-info' },
+                                React.createElement('h3', { className: 'product-name' }, product.name),
+                                React.createElement('div', { className: 'product-price' }, `$${product.price}`),
+                                React.createElement('button', {
+                                    className: 'add-to-cart-btn',
+                                    onClick: () => handleAddToCart(product),
+                                    disabled: cart.addedItems.has(product.id)
+                                }, cart.addedItems.has(product.id) ? 'Added to Cart' : 'Add to Cart')
+                            )
+                        )
+                    )
+                )
+            );
+        };
+
+        // Shopping Cart Component
+        const ShoppingCart = ({ onContinueShopping }) => {
+            const dispatch = useDispatch();
+            const cart = useSelector(state => state.cart);
+            const [showMessage, setShowMessage] = useState(false);
+            
+            const handleIncrease = (productId) => {
+                const product = productsData.find(p => p.id === productId);
+                dispatch(addToCart(product));
+            };
+            
+            const handleDecrease = (productId) => {
+                dispatch(removeFromCart(productId));
+            };
+            
+            const handleDelete = (productId) => {
+                dispatch(deleteFromCart(productId));
+            };
+            
+            const handleCheckout = () => {
+                setShowMessage(true);
+            };
+            
+            return React.createElement('section', { className: 'shopping-cart' },
+                React.createElement('h1', { className: 'page-title' }, 'Shopping Cart'),
+                
+                React.createElement('div', { className: 'cart-summary' },
+                    React.createElement('div', { className: 'summary-row' },
+                        React.createElement('span', {}, 'Total Items:'),
+                        React.createElement('span', {}, cart.totalQuantity)
+                    ),
+                    React.createElement('div', { className: 'summary-row' },
+                        React.createElement('span', {}, 'Total Price:'),
+                        React.createElement('span', {}, `$${cart.totalPrice.toFixed(2)}`)
+                    )
+                ),
+                
+                React.createElement('div', { className: 'cart-items' },
+                    cart.items.map(item => 
+                        React.createElement('div', { key: item.id, className: 'cart-item' },
+                            React.createElement('img', {
+                                src: item.thumbnail,
+                                alt: item.name,
+                                className: 'cart-item-image'
+                            }),
+                            React.createElement('div', { className: 'cart-item-details' },
+                                React.createElement('h3', { className: 'cart-item-name' }, item.name),
+                                React.createElement('div', { className: 'cart-item-price' }, `$${item.price}`)
+                            ),
+                            React.createElement('div', { className: 'quantity-controls' },
+                                React.createElement('button', {
+                                    className: 'quantity-btn',
+                                    onClick: () => handleDecrease(item.id)
+                                }, '-'),
+                                React.createElement('span', { className: 'quantity' }, item.quantity),
+                                React.createElement('button', {
+                                    className: 'quantity-btn',
+                                    onClick: () => handleIncrease(item.id)
+                                }, '+')
+                            ),
+                            React.createElement('button', {
+                                className: 'delete-btn',
+                                onClick: () => handleDelete(item.id)
+                            }, 'Delete')
+                        )
+                    )
+                ),
+                
+                React.createElement('div', { className: 'cart-actions' },
+                    React.createElement('button', {
+                        className: 'action-btn checkout-btn',
+                        onClick: handleCheckout
+                    }, 'Checkout'),
+                    React.createElement('button', {
+                        className: 'action-btn continue-shopping-btn',
+                        onClick: onContinueShopping
+                    }, 'Continue Shopping')
+                ),
+                
+                showMessage && React.createElement('div', { className: 'message' },
+                    React.createElement('h3', {}, 'Coming Soon!'),
+                    React.createElement('p', {}, 'Checkout functionality will be available soon.'),
+                    React.createElement('button', {
+                        onClick: () => setShowMessage(false)
+                    }, 'OK')
+                )
+            );
+        };
+
+        // Main App Component
+        const App = () => {
+            const [currentPage, setCurrentPage] = useState('landing');
+            
+            const renderPage = () => {
+                switch(currentPage) {
+                    case 'landing':
+                        return React.createElement(LandingPage, {
+                            onGetStarted: () => setCurrentPage('products')
+                        });
+                    case 'products':
+                        return React.createElement(ProductListing);
+                    case 'cart':
+                        return React.createElement(ShoppingCart, {
+                            onContinueShopping: () => setCurrentPage('products')
+                        });
+                    default:
+                        return React.createElement(LandingPage, {
+                            onGetStarted: () => setCurrentPage('products')
+                        });
+                }
+            };
+            
+            return React.createElement('div', { className: 'app' },
+                currentPage !== 'landing' && React.createElement(Header, {
+                    currentPage: currentPage,
+                    onNavigate: setCurrentPage
+                }),
+                renderPage()
+            );
+        };
+
+        // Render the app
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(
+            React.createElement(Provider, { store: store },
+                React.createElement(App)
+            )
+        );
+    </script>
+</body>
+</html>
